@@ -322,6 +322,7 @@
     @import "~@govflanders/vl-ui-data-table/src/scss/data-table";
     @import "~@govflanders/vl-ui-titles/src/scss/titles";
     @import "~@govflanders/vl-ui-infotext/src/scss/infotext";
+    @import "~@govflanders/vl-ui-dropdown-navigation/src/scss/dropdown-navigation";
 
     p, ul {
         font-size: 1.8rem;
