@@ -117,6 +117,34 @@
             </vl-layout>
         </vl-region>
 
+        <vl-region>
+            <vl-layout>
+                <vl-title tag-name="h1">Standaarden in ontwikkeling</vl-title>
+                <div class="vl-u-table-overflow">
+                    <vl-data-table mod-hover>
+                        <thead>
+                        <tr>
+                            <th>Titel</th>
+                            <th>Categorie</th>
+                            <th>Verantwoordelijke organisatie</th>
+                            <th>Type toepassing</th>
+                            <th>Publicatiedatum</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="object in standaardInOntwikkeling">
+                            <td>{{object.title}}</td>
+                            <td>{{object.about}}</td>
+                            <td><a :href=object.organisationID>{{object.organisation}}</a></td>
+                            <td>{{object.usage}}</td>
+                            <td>{{object.datePublished}}</td>
+                        </tr>
+                        </tbody>
+                    </vl-data-table>
+                </div>
+            </vl-layout>
+        </vl-region>
+
 
     </div>
 </template>
@@ -129,24 +157,58 @@
         data() {
             return {
                 erkendeStandaarden: [],
-                kandidaatStandaarden: []
+                kandidaatStandaarden: [],
+                standaardInOntwikkeling: []
             }
         },
         methods: {
             async createErkendeStandaardenTable() {
-                const erkendeStandaarden = require.context('../public/erkende-standaard');
-                for (let index in erkendeStandaarden.keys()) {
-                    const filePath = "http://localhost:8080/erkende-standaard" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
-                    const info = await this.extractData(filePath);
-                    this.erkendeStandaarden.push(info);
+                let erkendeStandaarden;
+                try {
+                    erkendeStandaarden = require.context('../public/erkende-standaard');
+                } catch (e) {
+                    console.log("Er zijn geen erkende standaarden op dit moment");
+                }
+
+                if (erkendeStandaarden) {
+                    for (let index in erkendeStandaarden.keys()) {
+                        const filePath = "http://localhost:8080/erkende-standaard" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
+                        const info = await this.extractData(filePath);
+                        this.erkendeStandaarden.push(info);
+                    }
                 }
             },
-            async createKandidaatStandaardenTable(){
-                const kandidaatStandaarden = require.context('../public/kandidaat-standaard');
-                for (let index in kandidaatStandaarden.keys()) {
-                    const filePath = "http://localhost:8080/kandidaat-standaard" + kandidaatStandaarden.keys()[index].substring(1, kandidaatStandaarden.keys()[index].length);
-                    const info = await this.extractData(filePath);
-                    this.kandidaatStandaarden.push(info);
+            async createKandidaatStandaardenTable() {
+                let kandidaatStandaarden;
+                try {
+                    kandidaatStandaarden = require.context('../public/kandidaat-standaard');
+                } catch (e) {
+                    console.log("Er zijn geen kandidaat standaarden op dit moment");
+                }
+
+                if (kandidaatStandaarden) {
+                    for (let index in kandidaatStandaarden.keys()) {
+                        const filePath = "http://localhost:8080/kandidaat-standaard" + kandidaatStandaarden.keys()[index].substring(1, kandidaatStandaarden.keys()[index].length);
+                        const info = await this.extractData(filePath);
+                        this.kandidaatStandaarden.push(info);
+                    }
+                }
+
+            },
+            async createStandaardenInOntwikkelingTable() {
+                let standaardenInOntwikkeling;
+                try {
+                    standaardenInOntwikkeling = require.context('../public/standaard-in-ontwikkeling');
+                } catch (e) {
+                    console.log("Er zijn geen standaarden in ontwikkeling op dit moment")
+                }
+
+                if (standaardenInOntwikkeling) {
+                    for (let index in standaardenInOntwikkeling.keys()) {
+                        const filePath = "http://localhost:8080/standaard-in-ontwikkeling" + standaardenInOntwikkeling.keys()[index].substring(1, standaardenInOntwikkeling.keys()[index].length);
+                        const info = await this.extractData(filePath);
+                        this.standaardInOntwikkeling.push(info);
+                    }
                 }
             },
             extractData(filePath) {
@@ -158,9 +220,9 @@
                     let information = {};
 
                     const titles = doc.getElementsByTagName('h1');
-                    for(let i = 0; i < titles.length ; i++){
+                    for (let i = 0; i < titles.length; i++) {
                         const prop = titles[i].getAttribute('itemprop');
-                        if(prop && prop === 'title'){
+                        if (prop && prop === 'title') {
                             information['title'] = titles[i].innerHTML;
                         }
                     }
@@ -187,6 +249,7 @@
         mounted() {
             this.createErkendeStandaardenTable();
             this.createKandidaatStandaardenTable();
+            this.createStandaardenInOntwikkelingTable();
         }
     }
 </script>
