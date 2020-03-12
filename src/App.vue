@@ -11,6 +11,48 @@
         </vl-region>
         <vl-region>
             <vl-layout>
+                <vl-grid class="vl-grid--align-center" mod-stacked>
+                    <vl-column width="3">
+                        <div class="vl-infotext-wrapper">
+                            <div class="vl-infotext vl-infotext--badge">
+                                <a href="#erkendeStandaarden">
+                                    <div class="vl-infotext__value" data-vl-infotext-value>
+                                        {{this.erkendeStandaarden.length}}
+                                    </div>
+                                    <div class="vl-infotext__text">erkende standaarden</div>
+                                </a>
+                            </div>
+                        </div>
+                    </vl-column>
+                    <vl-column width="3">
+                        <div class="vl-infotext-wrapper">
+                            <div class="vl-infotext vl-infotext--badge">
+                                <a href="#kandidaatStandaarden">
+                                    <div class="vl-infotext__value" data-vl-infotext-value>
+                                        {{this.kandidaatStandaarden.length}}
+                                    </div>
+                                    <div class="vl-infotext__text">kandidaat standaarden</div>
+                                </a>
+                            </div>
+                        </div>
+                    </vl-column>
+                    <vl-column width="3">
+                        <div class="vl-infotext-wrapper">
+                            <div class="vl-infotext vl-infotext--badge">
+                                <a href="#standaardenInOntwikkeling">
+                                    <div class="vl-infotext__value" data-vl-infotext-value>
+                                        {{this.standaardInOntwikkeling.length}}
+                                    </div>
+                                    <div class="vl-infotext__text">standaarden in ontwikkeling</div>
+                                </a>
+                            </div>
+                        </div>
+                    </vl-column>
+                </vl-grid>
+            </vl-layout>
+        </vl-region>
+        <vl-region>
+            <vl-layout>
                 <p>Overheden op lokaal, Vlaams, interfederaal en Europees niveau moeten in het kader van hun
                     dienstverlening vaak samenwerken. In praktijk moeten bijgevolg heel wat gegevens uitgewisseld worden
                     tussen de verschillende administraties. Deze gegevens zijn afkomstig uit verschillende systemen,
@@ -63,8 +105,8 @@
 
         <vl-region>
             <vl-layout>
-                <vl-title tag-name="h1">Erkende standaarden</vl-title>
-                <div class="vl-u-table-overflow">
+                <vl-title id="erkendeStandaarden" tag-name="h1">Erkende standaarden</vl-title>
+                <div v-if="!erkendError" class="vl-u-table-overflow">
                     <vl-data-table mod-hover>
                         <thead>
                         <tr>
@@ -86,13 +128,16 @@
                         </tbody>
                     </vl-data-table>
                 </div>
+                <div v-else>
+                    <vl-title tag-name="h5">Er zijn op dit moment geen erkende standaarden</vl-title>
+                </div>
             </vl-layout>
         </vl-region>
 
         <vl-region>
             <vl-layout>
-                <vl-title tag-name="h1">Kandidaat standaarden</vl-title>
-                <div class="vl-u-table-overflow">
+                <vl-title id="kandidaatStandaarden" tag-name="h1">Kandidaat standaarden</vl-title>
+                <div v-if="!kandidaatError" class="vl-u-table-overflow">
                     <vl-data-table mod-hover>
                         <thead>
                         <tr>
@@ -114,13 +159,16 @@
                         </tbody>
                     </vl-data-table>
                 </div>
+                <div v-else>
+                    <vl-title tag-name="h5">Er zijn op dit moment geen kandidaat standaarden</vl-title>
+                </div>
             </vl-layout>
         </vl-region>
 
         <vl-region>
             <vl-layout>
-                <vl-title tag-name="h1">Standaarden in ontwikkeling</vl-title>
-                <div class="vl-u-table-overflow">
+                <vl-title id="standaardenInOntwikkeling" tag-name="h1">Standaarden in ontwikkeling</vl-title>
+                <div v-if="!ontwikkelingError" class="vl-u-table-overflow">
                     <vl-data-table mod-hover>
                         <thead>
                         <tr>
@@ -142,6 +190,9 @@
                         </tbody>
                     </vl-data-table>
                 </div>
+                <div v-else>
+                    <vl-title tag-name="h5">Er zijn op dit moment geen standaarden in ontwikkeling</vl-title>
+                </div>
             </vl-layout>
         </vl-region>
 
@@ -158,7 +209,10 @@
             return {
                 erkendeStandaarden: [],
                 kandidaatStandaarden: [],
-                standaardInOntwikkeling: []
+                standaardInOntwikkeling: [],
+                erkendError: false,
+                kandidaatError: false,
+                ontwikkelingError: false
             }
         },
         methods: {
@@ -167,10 +221,12 @@
                 try {
                     erkendeStandaarden = require.context('../public/erkende-standaard');
                 } catch (e) {
+                    this.erkendError = true;
                     console.log("Er zijn geen erkende standaarden op dit moment");
                 }
 
                 if (erkendeStandaarden) {
+                    this.erkendError = false;
                     for (let index in erkendeStandaarden.keys()) {
                         const filePath = "http://localhost:8080/erkende-standaard" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
                         const info = await this.extractData(filePath);
@@ -183,10 +239,12 @@
                 try {
                     kandidaatStandaarden = require.context('../public/kandidaat-standaard');
                 } catch (e) {
+                    tis.kandidaatError = true;
                     console.log("Er zijn geen kandidaat standaarden op dit moment");
                 }
 
                 if (kandidaatStandaarden) {
+                    this.kandidaatError = false;
                     for (let index in kandidaatStandaarden.keys()) {
                         const filePath = "http://localhost:8080/kandidaat-standaard" + kandidaatStandaarden.keys()[index].substring(1, kandidaatStandaarden.keys()[index].length);
                         const info = await this.extractData(filePath);
@@ -200,10 +258,12 @@
                 try {
                     standaardenInOntwikkeling = require.context('../public/standaard-in-ontwikkeling');
                 } catch (e) {
+                    this.ontwikkelingError = true;
                     console.log("Er zijn geen standaarden in ontwikkeling op dit moment")
                 }
 
                 if (standaardenInOntwikkeling) {
+                    this.ontwikkelingError = false;
                     for (let index in standaardenInOntwikkeling.keys()) {
                         const filePath = "http://localhost:8080/standaard-in-ontwikkeling" + standaardenInOntwikkeling.keys()[index].substring(1, standaardenInOntwikkeling.keys()[index].length);
                         const info = await this.extractData(filePath);
@@ -261,4 +321,10 @@
     @import "~@govflanders/vl-ui-introduction/src/scss/introduction";
     @import "~@govflanders/vl-ui-data-table/src/scss/data-table";
     @import "~@govflanders/vl-ui-titles/src/scss/titles";
+    @import "~@govflanders/vl-ui-infotext/src/scss/infotext";
+
+    p, ul {
+        font-size: 1.8rem;
+    }
+
 </style>

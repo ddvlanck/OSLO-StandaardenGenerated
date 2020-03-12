@@ -10,7 +10,10 @@ import {
     VlLayout,
     VlRegion,
     VlDataTable,
-    VlTitle
+    VlTitle,
+    VlInfotext,
+    VlGrid,
+    VlColumn
 } from '@govflanders/vl-ui-vue-components';
 
 Vue.component('vl-region', VlLayout);
@@ -18,6 +21,10 @@ Vue.component('vl-layout', VlRegion);
 Vue.component('vl-introduction', VlIntroduction);
 Vue.component('vl-data-table', VlDataTable);
 Vue.component('vl-title', VlTitle);
+Vue.component('vl-infotext', VlInfotext);
+Vue.component('vl-grid', VlGrid);
+Vue.component('vl-column', VlColumn)
+
 
 Vue.use(VlCore);
 Vue.use(VlUtil);

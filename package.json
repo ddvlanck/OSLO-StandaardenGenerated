@@ -10,6 +10,7 @@
     "@govflanders/vl-ui-content-header": "^3.10.11",
     "@govflanders/vl-ui-core": "^3.10.11",
     "@govflanders/vl-ui-data-table": "^3.10.11",
+    "@govflanders/vl-ui-infotext": "^3.10.11",
     "@govflanders/vl-ui-introduction": "^3.10.11",
     "@govflanders/vl-ui-titles": "^3.10.11",
     "@govflanders/vl-ui-vue-components": "^3.10.13",
