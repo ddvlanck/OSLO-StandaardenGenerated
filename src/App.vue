@@ -89,6 +89,34 @@
             </vl-layout>
         </vl-region>
 
+        <vl-region>
+            <vl-layout>
+                <vl-title tag-name="h1">Kandidaat standaarden</vl-title>
+                <div class="vl-u-table-overflow">
+                    <vl-data-table mod-hover>
+                        <thead>
+                        <tr>
+                            <th>Titel</th>
+                            <th>Categorie</th>
+                            <th>Verantwoordelijke organisatie</th>
+                            <th>Type toepassing</th>
+                            <th>Publicatiedatum</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="object in kandidaatStandaarden">
+                            <td>{{object.title}}</td>
+                            <td>{{object.about}}</td>
+                            <td><a :href=object.organisationID>{{object.organisation}}</a></td>
+                            <td>{{object.usage}}</td>
+                            <td>{{object.datePublished}}</td>
+                        </tr>
+                        </tbody>
+                    </vl-data-table>
+                </div>
+            </vl-layout>
+        </vl-region>
+
 
     </div>
 </template>
@@ -100,18 +128,26 @@
         name: 'App',
         data() {
             return {
-                erkendeStandaarden: []
+                erkendeStandaarden: [],
+                kandidaatStandaarden: []
             }
         },
         methods: {
             async createErkendeStandaardenTable() {
-                const erkendeStandaarden = require.context('../public/erkende-standaard-test');
+                const erkendeStandaarden = require.context('../public/erkende-standaard');
                 for (let index in erkendeStandaarden.keys()) {
-                    const filePath = "http://localhost:8080/erkende-standaard-test" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
+                    const filePath = "http://localhost:8080/erkende-standaard" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
                     const info = await this.extractData(filePath);
                     this.erkendeStandaarden.push(info);
                 }
-                console.log(this.erkendeStandaarden);
+            },
+            async createKandidaatStandaardenTable(){
+                const kandidaatStandaarden = require.context('../public/kandidaat-standaard');
+                for (let index in kandidaatStandaarden.keys()) {
+                    const filePath = "http://localhost:8080/kandidaat-standaard" + kandidaatStandaarden.keys()[index].substring(1, kandidaatStandaarden.keys()[index].length);
+                    const info = await this.extractData(filePath);
+                    this.kandidaatStandaarden.push(info);
+                }
             },
             extractData(filePath) {
                 return fetch(filePath).then(res => res.text()).then(html => {
@@ -150,6 +186,7 @@
         },
         mounted() {
             this.createErkendeStandaardenTable();
+            this.createKandidaatStandaardenTable();
         }
     }
 </script>
