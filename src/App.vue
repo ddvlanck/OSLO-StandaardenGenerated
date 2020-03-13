@@ -122,7 +122,7 @@
                             <td>{{object.title}}</td>
                             <td>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
-                            <td>{{object.usage}}</td>
+                            <td>{{object.type}}</td>
                             <td>{{object.datePublished}}</td>
                         </tr>
                         </tbody>
@@ -153,7 +153,7 @@
                             <td>{{object.title}}</td>
                             <td>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
-                            <td>{{object.usage}}</td>
+                            <td>{{object.type}}</td>
                             <td>{{object.datePublished}}</td>
                         </tr>
                         </tbody>
@@ -184,7 +184,7 @@
                             <td>{{object.title}}</td>
                             <td>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
-                            <td>{{object.usage}}</td>
+                            <td>{{object.type}}</td>
                             <td>{{object.datePublished}}</td>
                         </tr>
                         </tbody>
