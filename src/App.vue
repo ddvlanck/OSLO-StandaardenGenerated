@@ -105,9 +105,40 @@
 
         <vl-region>
             <vl-layout>
+                <vl-dropdown-navigation label="Filter standaarden">
+                    <vl-link-list>
+                        <vl-link-list-item>
+                            <vl-link @click="filterTables('All')" mod-block>
+                                Alle standaarden
+                            </vl-link>
+                        </vl-link-list-item>
+                        <vl-link-list-item>
+                            <vl-link @click="filterTables('Vocabularia en applicatieprofielen')" mod-block>
+                                Vocabularia & applicatieprofielen
+                            </vl-link>
+                        </vl-link-list-item>
+                        <vl-link-list-item>
+                            <vl-link @click="filterTables('Technische standaard')" mod-block>
+                                Technische standaarden
+                            </vl-link>
+                        </vl-link-list-item>
+                        <vl-link-list-item>
+                            <vl-link @click="filterTables('Standaard voor organisatorische interoperabiliteit')"
+                                     mod-block>
+                                Standaarden voor organisatorische interoperabiliteit
+                            </vl-link>
+                        </vl-link-list-item>
+                    </vl-link-list>
+                </vl-dropdown-navigation>
+            </vl-layout>
+        </vl-region>
+
+
+        <vl-region>
+            <vl-layout>
                 <vl-title id="erkendeStandaarden" tag-name="h1">Erkende standaarden</vl-title>
                 <div v-if="!erkendError" class="vl-u-table-overflow">
-                    <vl-data-table mod-hover>
+                    <vl-data-table id="erkendeStandaardenTable" mod-hover>
                         <thead>
                         <tr>
                             <th>Titel</th>
@@ -138,7 +169,7 @@
             <vl-layout>
                 <vl-title id="kandidaatStandaarden" tag-name="h1">Kandidaat standaarden</vl-title>
                 <div v-if="!kandidaatError" class="vl-u-table-overflow">
-                    <vl-data-table mod-hover>
+                    <vl-data-table id="kandidaatStandaardenTable" mod-hover>
                         <thead>
                         <tr>
                             <th>Titel</th>
@@ -169,7 +200,7 @@
             <vl-layout>
                 <vl-title id="standaardenInOntwikkeling" tag-name="h1">Standaarden in ontwikkeling</vl-title>
                 <div v-if="!ontwikkelingError" class="vl-u-table-overflow">
-                    <vl-data-table mod-hover>
+                    <vl-data-table id="ontwikkelingTable" mod-hover>
                         <thead>
                         <tr>
                             <th>Titel</th>
@@ -202,7 +233,6 @@
 
 <script>
 
-
     export default {
         name: 'App',
         data() {
@@ -216,6 +246,36 @@
             }
         },
         methods: {
+            filterTables(sortValue) {
+                this.filterRows(sortValue, "erkendeStandaardenTable");
+                this.filterRows(sortValue, "kandidaatStandaardenTable");
+                this.filterRows(sortValue, "ontwikkelingTable");
+
+            },
+            filterRows(sortValue, tableID) {
+                const table = document.getElementById(tableID);
+                if (table) {
+                    const rows = table.getElementsByTagName('tr');
+
+                    if (sortValue === 'All') {
+                        for (let i = 0; i < rows.length; i++) {
+                            rows[i].style.display = "";
+                        }
+                    } else {
+                        for (let i = 0; i < rows.length; i++) {
+                            const td = rows[i].getElementsByTagName("td")[1];
+                            if (td) {
+                                let category = td.innerHTML;
+                                if (category.indexOf(sortValue) < 0) {
+                                    rows[i].style.display = "none";
+                                } else {
+                                    rows[i].style.display = "";
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             async createErkendeStandaardenTable() {
                 let erkendeStandaarden;
                 try {
@@ -304,7 +364,7 @@
                     }
                     return information;
                 });
-            }
+            },
         },
         mounted() {
             this.createErkendeStandaardenTable();
@@ -323,6 +383,10 @@
     @import "~@govflanders/vl-ui-titles/src/scss/titles";
     @import "~@govflanders/vl-ui-infotext/src/scss/infotext";
     @import "~@govflanders/vl-ui-dropdown-navigation/src/scss/dropdown-navigation";
+    @import "~@govflanders/vl-ui-link/src/scss/link";
+    @import "~@govflanders/vl-ui-link-list/src/scss/link-list";
+    @import "~@govflanders/vl-ui-popover/src/scss/popover";
+    @import "~@govflanders/vl-ui-util/src/scss/util";
 
     p, ul {
         font-size: 1.8rem;
