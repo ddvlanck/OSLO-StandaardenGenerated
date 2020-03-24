@@ -150,7 +150,7 @@
                         </thead>
                         <tbody>
                         <tr v-for="object in erkendeStandaarden">
-                            <td>{{object.title}}</td>
+                            <td><a :href="/erkende-standaard/ + object.path">{{object.title}}</a></td>
                             <td>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
                             <td>{{object.type}}</td>
@@ -181,7 +181,7 @@
                         </thead>
                         <tbody>
                         <tr v-for="object in kandidaatStandaarden">
-                            <td>{{object.title}}</td>
+                            <td><a :href="/kandidaat-standaard/ + object.path">{{object.title}}</a></td>
                             <td>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
                             <td>{{object.type}}</td>
@@ -212,7 +212,7 @@
                         </thead>
                         <tbody>
                         <tr v-for="object in standaardInOntwikkeling">
-                            <td>{{object.title}}</td>
+                            <td><a :href="/standaard-in-ontwikkeling/ + object.path">{{object.title}}</a></td>
                             <td>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
                             <td>{{object.type}}</td>
@@ -290,6 +290,7 @@
                     for (let index in erkendeStandaarden.keys()) {
                         const filePath = "http://localhost:8080/erkende-standaard" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
                         const info = await this.extractData(filePath);
+                        info.path = erkendeStandaarden.keys()[index].substring(2, erkendeStandaarden.keys()[index].length);
                         this.erkendeStandaarden.push(info);
                     }
                 }
@@ -299,7 +300,7 @@
                 try {
                     kandidaatStandaarden = require.context('../public/kandidaat-standaard');
                 } catch (e) {
-                    tis.kandidaatError = true;
+                    this.kandidaatError = true;
                     console.log("Er zijn geen kandidaat standaarden op dit moment");
                 }
 
@@ -308,6 +309,7 @@
                     for (let index in kandidaatStandaarden.keys()) {
                         const filePath = "http://localhost:8080/kandidaat-standaard" + kandidaatStandaarden.keys()[index].substring(1, kandidaatStandaarden.keys()[index].length);
                         const info = await this.extractData(filePath);
+                        info.path = kandidaatStandaarden.keys()[index].substring(2, kandidaatStandaarden.keys()[index].length);
                         this.kandidaatStandaarden.push(info);
                     }
                 }
@@ -327,6 +329,7 @@
                     for (let index in standaardenInOntwikkeling.keys()) {
                         const filePath = "http://localhost:8080/standaard-in-ontwikkeling" + standaardenInOntwikkeling.keys()[index].substring(1, standaardenInOntwikkeling.keys()[index].length);
                         const info = await this.extractData(filePath);
+                        info.path = standaardenInOntwikkeling.keys()[index].substring(2, standaardenInOntwikkeling.keys()[index].length);
                         this.standaardInOntwikkeling.push(info);
                     }
                 }
