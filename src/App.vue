@@ -113,7 +113,8 @@
                             </vl-link>
                         </vl-link-list-item>
                         <vl-link-list-item>
-                            <vl-link @click="filterTables('Vocabularia en applicatieprofielen')" mod-block>
+                            <!-- Only applicatieprofielen because value to check contains &amp;-->
+                            <vl-link @click="filterTables('applicatieprofielen')" mod-block>
                                 Vocabularia & applicatieprofielen
                             </vl-link>
                         </vl-link-list-item>
@@ -151,7 +152,10 @@
                         <tbody>
                         <tr v-for="object in erkendeStandaarden">
                             <td><a :href="/erkende-standaard/ + object.path">{{object.title}}</a></td>
-                            <td>{{object.about}}</td>
+                            <td v-if="object.about.indexOf('&amp;') >= 0">
+                                {{object.about.replace('amp;', '')}}
+                            </td>
+                            <td v-else>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
                             <td>{{object.type}}</td>
                             <td>{{object.datePublished}}</td>
@@ -182,7 +186,10 @@
                         <tbody>
                         <tr v-for="object in kandidaatStandaarden">
                             <td><a :href="/kandidaat-standaard/ + object.path">{{object.title}}</a></td>
-                            <td>{{object.about}}</td>
+                            <td v-if="object.about.indexOf('&amp;') >= 0">
+                                {{object.about.replace('amp;', '')}}
+                            </td>
+                            <td v-else>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
                             <td>{{object.type}}</td>
                             <td>{{object.datePublished}}</td>
@@ -213,7 +220,10 @@
                         <tbody>
                         <tr v-for="object in standaardInOntwikkeling">
                             <td><a :href="/standaard-in-ontwikkeling/ + object.path">{{object.title}}</a></td>
-                            <td>{{object.about}}</td>
+                            <td v-if="object.about.indexOf('&amp;') >= 0">
+                                {{object.about.replace('amp;', '')}}
+                            </td>
+                            <td v-else>{{object.about}}</td>
                             <td><a :href=object.organisationID>{{object.organisation}}</a></td>
                             <td>{{object.type}}</td>
                             <td>{{object.datePublished}}</td>
@@ -276,62 +286,47 @@
                     }
                 }
             },
-            async createErkendeStandaardenTable() {
-                let erkendeStandaarden;
+            init() {
+
+                // Erkende standaarden
                 try {
-                    erkendeStandaarden = require.context('../public/erkende-standaard');
+                    const erkendeStandaarden = require.context('../public/erkende-standaard');
+                    if (erkendeStandaarden) {
+                        this.erkendError = false;
+                        this.createTable(erkendeStandaarden, 'erkende-standaard', this.erkendeStandaarden);
+                    }
                 } catch (e) {
                     this.erkendError = true;
-                    console.log("Er zijn geen erkende standaarden op dit moment");
                 }
 
-                if (erkendeStandaarden) {
-                    this.erkendError = false;
-                    for (let index in erkendeStandaarden.keys()) {
-                        const filePath = "http://localhost:8080/erkende-standaard" + erkendeStandaarden.keys()[index].substring(1, erkendeStandaarden.keys()[index].length);
-                        const info = await this.extractData(filePath);
-                        info.path = erkendeStandaarden.keys()[index].substring(2, erkendeStandaarden.keys()[index].length);
-                        this.erkendeStandaarden.push(info);
-                    }
-                }
-            },
-            async createKandidaatStandaardenTable() {
-                let kandidaatStandaarden;
+                // Kandidaat standaarden
                 try {
-                    kandidaatStandaarden = require.context('../public/kandidaat-standaard');
+                    const kandidaatStandaarden = require.context('../public/kandidaat-standaard');
+                    if (kandidaatStandaarden) {
+                        this.kandidaatError = false;
+                        this.createTable(kandidaatStandaarden, 'kandidaat-standaard', this.kandidaatStandaarden);
+                    }
                 } catch (e) {
                     this.kandidaatError = true;
-                    console.log("Er zijn geen kandidaat standaarden op dit moment");
                 }
 
-                if (kandidaatStandaarden) {
-                    this.kandidaatError = false;
-                    for (let index in kandidaatStandaarden.keys()) {
-                        const filePath = "http://localhost:8080/kandidaat-standaard" + kandidaatStandaarden.keys()[index].substring(1, kandidaatStandaarden.keys()[index].length);
-                        const info = await this.extractData(filePath);
-                        info.path = kandidaatStandaarden.keys()[index].substring(2, kandidaatStandaarden.keys()[index].length);
-                        this.kandidaatStandaarden.push(info);
-                    }
-                }
-
-            },
-            async createStandaardenInOntwikkelingTable() {
-                let standaardenInOntwikkeling;
+                // Standaarden in ontwikkeling
                 try {
-                    standaardenInOntwikkeling = require.context('../public/standaard-in-ontwikkeling');
+                    const inOntwikkeling = require.context('../public/standaard-in-ontwikkeling');
+                    if (inOntwikkeling) {
+                        this.ontwikkelingError = false;
+                        this.createTable(inOntwikkeling, 'standaard-in-ontwikkeling', this.standaardInOntwikkeling);
+                    }
                 } catch (e) {
                     this.ontwikkelingError = true;
-                    console.log("Er zijn geen standaarden in ontwikkeling op dit moment")
                 }
-
-                if (standaardenInOntwikkeling) {
-                    this.ontwikkelingError = false;
-                    for (let index in standaardenInOntwikkeling.keys()) {
-                        const filePath = "http://localhost:8080/standaard-in-ontwikkeling" + standaardenInOntwikkeling.keys()[index].substring(1, standaardenInOntwikkeling.keys()[index].length);
-                        const info = await this.extractData(filePath);
-                        info.path = standaardenInOntwikkeling.keys()[index].substring(2, standaardenInOntwikkeling.keys()[index].length);
-                        this.standaardInOntwikkeling.push(info);
-                    }
+            },
+            async createTable(standaarden, type, tableArray) {
+                for (let index in standaarden.keys()) {
+                    const filePath = "http://localhost:8080/" + type + standaarden.keys()[index].substring(1, standaarden.keys()[index].length);
+                    const info = await this.extractData(filePath);
+                    info.path = standaarden.keys()[index].substring(2, standaarden.keys()[index].length);
+                    tableArray.push(info);
                 }
             },
             extractData(filePath) {
@@ -370,9 +365,7 @@
             },
         },
         mounted() {
-            this.createErkendeStandaardenTable();
-            this.createKandidaatStandaardenTable();
-            this.createStandaardenInOntwikkelingTable();
+            this.init();
         }
     }
 </script>
